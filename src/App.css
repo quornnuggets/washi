@@ -2,6 +2,8 @@
   font-family: "Courier New", monospace;
   color: #403d34;
   background: #f7efdf;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
 }
 
 * {
@@ -10,6 +12,7 @@
 
 body {
   margin: 0;
+  min-width: 320px;
 }
 
 button,
@@ -18,20 +21,14 @@ select {
 }
 
 button {
-  border: 2px solid #4d5d4a;
-  border-radius: 12px;
-  padding: 12px 20px;
-  background: #b8c4a4;
-  color: #293228;
+  border: 0;
   cursor: pointer;
 }
 
-select {
-  width: 100%;
-  border: 2px solid #7b796b;
-  border-radius: 10px;
-  padding: 10px;
-  background: #fffaf0;
+button:focus-visible,
+select:focus-visible {
+  outline: 3px solid #647c71;
+  outline-offset: 3px;
 }
 
 .app {
@@ -43,24 +40,34 @@ select {
 
 .card {
   width: min(100%, 390px);
+  min-height: 640px;
   padding: 28px;
   border: 3px solid #66735e;
   border-radius: 28px;
   background: #fff8e9;
   text-align: center;
   box-shadow: 8px 8px 0 #aab49b;
+  transition:
+    background 250ms ease,
+    transform 250ms ease;
+}
+
+.card--finished {
+  background: #fff0e5;
 }
 
 header h1 {
   margin: 0;
   font-size: 42px;
+  letter-spacing: -3px;
 }
 
 header p {
-  margin-top: 4px;
+  margin: 4px 0 0;
 }
 
 .washingMachine {
+  position: relative;
   width: 230px;
   margin: 28px auto;
   padding: 12px 14px 20px;
@@ -70,20 +77,30 @@ header p {
   box-shadow: 5px 5px 0 #b9ad98;
 }
 
+.washingMachine--washing {
+  animation: machineWobble 1.2s steps(2, end) infinite;
+}
+
+.washingMachine--finished {
+  animation: finishedBounce 700ms ease-in-out infinite alternate;
+}
+
 .controls {
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 38px;
   padding: 5px;
   border-bottom: 3px solid #655f52;
 }
 
 .display {
+  min-width: 70px;
   padding: 4px 8px;
   background: #879080;
   color: #fff8e9;
   font-size: 12px;
+  text-transform: uppercase;
 }
 
 .dial {
@@ -95,10 +112,12 @@ header p {
 }
 
 .door {
+  position: relative;
   width: 145px;
   height: 145px;
   display: grid;
   place-items: center;
+  overflow: hidden;
   margin: 18px auto 0;
   border: 10px solid #655f52;
   border-radius: 50%;
@@ -106,18 +125,169 @@ header p {
 }
 
 .face {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+  position: relative;
+  z-index: 2;
   font-size: 26px;
+  font-weight: bold;
+}
+
+.clothes {
+  position: absolute;
+  inset: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 50%;
+  font-size: 28px;
+}
+
+.washingMachine--washing .clothes {
+  animation: spin 2s linear infinite;
+}
+
+.bubbles {
+  position: absolute;
+  top: -18px;
+  right: 16px;
+  display: flex;
+  gap: 5px;
+  font-size: 24px;
+}
+
+.bubbles span {
+  animation: floatBubble 1.4s ease-in-out infinite;
+}
+
+.bubbles span:nth-child(2) {
+  animation-delay: 250ms;
+}
+
+.bubbles span:nth-child(3) {
+  animation-delay: 500ms;
+}
+
+.timerControls {
+  display: grid;
+  gap: 14px;
+}
+
+.timerControls h2 {
+  margin: 0;
+}
+
+.timerControls p {
+  margin: 0;
+}
+
+.timer {
+  font-size: 40px;
+  font-weight: bold;
+  letter-spacing: 2px;
 }
 
 label {
   display: block;
-  margin-bottom: 8px;
 }
 
-select + button {
+select {
   width: 100%;
-  margin-top: 16px;
+  border: 2px solid #7b796b;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fffaf0;
+  color: #403d34;
+}
+
+.primaryButton,
+.secondaryButton {
+  width: 100%;
+  border: 2px solid #4d5d4a;
+  border-radius: 12px;
+  padding: 13px 20px;
+  box-shadow: 3px 3px 0 #697767;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.primaryButton {
+  background: #b8c4a4;
+  color: #293228;
+}
+
+.secondaryButton {
+  background: #eee3cc;
+  color: #403d34;
+}
+
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #697767;
+}
+
+.primaryButton:active,
+.secondaryButton:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #697767;
+}
+
+.finishedMessage {
+  padding: 16px;
+  border: 2px dashed #b78b73;
+  border-radius: 16px;
+  background: #fff8ef;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes machineWobble {
+  0%,
+  100% {
+    transform: rotate(-0.5deg);
+  }
+
+  50% {
+    transform: rotate(0.5deg);
+  }
+}
+
+@keyframes finishedBounce {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes floatBubble {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.7);
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
