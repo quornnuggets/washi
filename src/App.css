@@ -111,17 +111,17 @@ header p {
   background: #fff8e9;
 }
 
-.door {
-  position: relative;
-  width: 145px;
-  height: 145px;
+.doorProgress {
+  width: 165px;
+  height: 165px;
   display: grid;
   place-items: center;
-  overflow: hidden;
   margin: 18px auto 0;
-  border: 10px solid #655f52;
   border-radius: 50%;
-  background: #a9c1c3;
+}
+
+.door {
+  margin: 0;
 }
 
 .face {

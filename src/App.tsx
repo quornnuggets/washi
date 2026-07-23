@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-const STORAGE_KEY = "washi-finish-time";
+const FINISH_TIME_KEY = "washi-finish-time";
+const DURATION_KEY = "washi-duration-seconds";
 
 type TimerStatus = "idle" | "washing" | "finished";
 
+function getSavedDuration(): number {
+  const savedValue = localStorage.getItem(DURATION_KEY);
+  const parsedValue = Number(savedValue);
+
+  return Number.isFinite(parsedValue) ? parsedValue : 0;
+}
+
 function getSavedFinishTime(): number | null {
-  const savedValue = localStorage.getItem(STORAGE_KEY);
+  const savedValue = localStorage.getItem(FINISH_TIME_KEY);
 
   if (!savedValue) {
     return null;
@@ -41,6 +49,7 @@ function formatTime(totalSeconds: number): string {
 
 function App() {
   const [duration, setDuration] = useState(60);
+  const [totalSeconds, setTotalSeconds] = useState(() => getSavedDuration());
 
   const [finishTime, setFinishTime] = useState<number | null>(() =>
     getSavedFinishTime(),
@@ -76,27 +85,37 @@ function App() {
   }, [finishTime]);
 
   function startCycle() {
-    const newFinishTime = Date.now() + duration * 60 * 1000;
+    const newTotalSeconds = duration * 60;
+    const newFinishTime = Date.now() + newTotalSeconds * 1000;
 
-    localStorage.setItem(STORAGE_KEY, newFinishTime.toString());
+    localStorage.setItem(FINISH_TIME_KEY, newFinishTime.toString());
+    localStorage.setItem(DURATION_KEY, newTotalSeconds.toString());
 
     setFinishTime(newFinishTime);
-    setRemainingSeconds(calculateRemainingSeconds(newFinishTime));
+    setRemainingSeconds(newTotalSeconds);
+    setTotalSeconds(newTotalSeconds);
   }
 
   function cancelCycle() {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(FINISH_TIME_KEY);
+    localStorage.removeItem(DURATION_KEY);
 
     setFinishTime(null);
     setRemainingSeconds(0);
+    setTotalSeconds(0);
   }
 
   function completeLaundry() {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(FINISH_TIME_KEY);
 
     setFinishTime(null);
     setRemainingSeconds(0);
   }
+
+  const progress =
+  totalSeconds > 0
+    ? Math.min(100, Math.max(0, (remainingSeconds / totalSeconds) * 100))
+    : 0;
 
   return (
     <main className="app">
@@ -107,41 +126,51 @@ function App() {
         </header>
 
         <div className={`washingMachine washingMachine--${status}`}>
-          <div className="controls">
-            <span className="display">
-              {status === "idle" && "ready"}
-              {status === "washing" && formatTime(remainingSeconds)}
-              {status === "finished" && "done!"}
-            </span>
+  <div className="controls">
+    <span className="display">
+      {status === "idle" && "ready"}
+      {status === "washing" && formatTime(remainingSeconds)}
+      {status === "finished" && "done!"}
+    </span>
 
-            <span className="dial" />
-          </div>
+    <span className="dial" />
+  </div>
 
-          <div className="door">
-            <div className="clothes">
-              {status === "washing" && (
-                <>
-                  <span>🧦</span>
-                  <span>👕</span>
-                </>
-              )}
-            </div>
+  <div
+    className="doorProgress"
+    style={{
+      background: `conic-gradient(
+        #8fa795 ${progress}%,
+        #d8cfbd ${progress}% 100%
+      )`,
+    }}
+  >
+    <div className="door">
+      <div className="clothes">
+        {status === "washing" && (
+          <>
+            <span>🧦</span>
+            <span>👕</span>
+          </>
+        )}
+      </div>
 
-            <div className="face" aria-label={`Washi is ${status}`}>
-              {status === "idle" && <span>• ᴗ •</span>}
-              {status === "washing" && <span>• ◡ •</span>}
-              {status === "finished" && <span>• ᴖ •</span>}
-            </div>
-          </div>
+      <div className="face" aria-label={`Washi is ${status}`}>
+        {status === "idle" && <span>• ᴗ •</span>}
+        {status === "washing" && <span>• ◡ •</span>}
+        {status === "finished" && <span>• ᴖ •</span>}
+      </div>
+    </div>
+  </div>
 
-          {status === "washing" && (
-            <div className="bubbles" aria-hidden="true">
-              <span>○</span>
-              <span>◦</span>
-              <span>○</span>
-            </div>
-          )}
-        </div>
+  {status === "washing" && (
+    <div className="bubbles" aria-hidden="true">
+      <span>○</span>
+      <span>◦</span>
+      <span>○</span>
+    </div>
+  )}
+</div>
 
         {status === "idle" && (
           <section className="timerControls">
