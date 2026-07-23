@@ -1,276 +1,250 @@
-:root {
-  font-family: "Courier New", monospace;
-  color: #403d34;
-  background: #f7efdf;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-}
-
 * {
   box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-}
-
-button,
-select {
-  font: inherit;
-}
-
-button {
-  border: 0;
-  cursor: pointer;
-}
-
-button:focus-visible,
-select:focus-visible {
-  outline: 3px solid #647c71;
-  outline-offset: 3px;
 }
 
 .app {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: 32px;
+  background: var(--bg);
 }
 
 .card {
-  width: min(100%, 390px);
-  min-height: 640px;
-  padding: 28px;
-  border: 3px solid #66735e;
-  border-radius: 28px;
-  background: #fff8e9;
+  width: min(100%, 420px);
+  min-height: 720px;
+  padding: 32px;
+  border: 4px solid var(--sage-dark);
+  border-radius: 32px;
+  background: var(--card);
   text-align: center;
-  box-shadow: 8px 8px 0 #aab49b;
-  transition:
-    background 250ms ease,
-    transform 250ms ease;
+  box-shadow: 10px 10px 0 rgba(109, 106, 95, 0.35);
 }
 
 .card--finished {
-  background: #fff0e5;
+  background: #fff3ea;
 }
 
 header h1 {
   margin: 0;
-  font-size: 42px;
-  letter-spacing: -3px;
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--heading);
 }
 
 header p {
-  margin: 4px 0 0;
+  margin-top: 8px;
+  color: var(--text);
+  font-size: 1.3rem;
 }
 
 .washingMachine {
   position: relative;
-  width: 230px;
-  margin: 28px auto;
-  padding: 12px 14px 20px;
-  border: 3px solid #655f52;
-  border-radius: 18px;
-  background: #eee3cc;
-  box-shadow: 5px 5px 0 #b9ad98;
+  width: 260px;
+  margin: 32px auto;
+  padding: 16px;
+  border: 4px solid var(--border);
+  border-radius: 24px;
+  background: var(--machine);
+  box-shadow: 6px 6px 0 rgba(109, 106, 95, 0.3);
 }
 
 .washingMachine--washing {
-  animation: machineWobble 1.2s steps(2, end) infinite;
-}
-
-.washingMachine--finished {
-  animation: finishedBounce 700ms ease-in-out infinite alternate;
+  animation: wobble 0.8s ease-in-out infinite alternate;
 }
 
 .controls {
-  height: 38px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 5px;
-  border-bottom: 3px solid #655f52;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 4px solid var(--border);
 }
 
 .display {
-  min-width: 70px;
-  padding: 4px 8px;
-  background: #879080;
-  color: #fff8e9;
-  font-size: 12px;
-  text-transform: uppercase;
+  background: var(--sage-dark);
+  color: white;
+  padding: 10px 18px;
+  font-size: 1rem;
+  min-width: 90px;
 }
 
 .dial {
-  width: 24px;
-  height: 24px;
-  border: 3px solid #655f52;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: #fff8e9;
+  border: 4px solid var(--border);
+  background: white;
 }
 
 .doorProgress {
-  width: 165px;
-  height: 165px;
+  width: 180px;
+  height: 180px;
+  margin: 24px auto 0;
   display: grid;
   place-items: center;
-  margin: 18px auto 0;
   border-radius: 50%;
+  transition: background 1s linear;
 }
 
 .door {
-  margin: 0;
-}
-
-.face {
   position: relative;
-  z-index: 2;
-  font-size: 26px;
-  font-weight: bold;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 10px solid var(--border);
+  background: var(--door);
+  display: grid;
+  place-items: center;
 }
 
 .clothes {
   position: absolute;
-  inset: 16px;
+  inset: 22px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 4px;
-  border-radius: 50%;
-  font-size: 28px;
+  align-items: center;
+  gap: 10px;
+  font-size: 2rem;
 }
 
 .washingMachine--washing .clothes {
-  animation: spin 2s linear infinite;
+  animation: spin 3s linear infinite;
+}
+
+.face {
+  position: relative;
+  z-index: 5;
+  font-size: 1.7rem;
+  color: var(--border);
 }
 
 .bubbles {
   position: absolute;
-  top: -18px;
-  right: 16px;
+  top: -20px;
+  right: 20px;
   display: flex;
-  gap: 5px;
-  font-size: 24px;
+  gap: 8px;
+  font-size: 1.5rem;
 }
 
 .bubbles span {
-  animation: floatBubble 1.4s ease-in-out infinite;
+  animation: bubble 1.5s infinite ease-in-out;
 }
 
 .bubbles span:nth-child(2) {
-  animation-delay: 250ms;
+  animation-delay: .3s;
 }
 
 .bubbles span:nth-child(3) {
-  animation-delay: 500ms;
+  animation-delay: .6s;
+}
+
+.timer {
+  font-family: "Fredoka", sans-serif !important;
+  font-size: 4rem;
+  font-weight: 600;
+  color: var(--heading);
+
+  background: #ffffff;
+  border: 3px solid var(--border);
+  border-radius: 18px;
+  padding: 12px 20px;
+  display: inline-block;
+
+  box-shadow: 4px 4px 0 rgba(109, 106, 95, 0.2);
 }
 
 .timerControls {
-  display: grid;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .timerControls h2 {
   margin: 0;
-}
-
-.timerControls p {
-  margin: 0;
+  color: var(--heading);
+  font-size: 2.2rem;
 }
 
 .timer {
-  font-size: 40px;
-  font-weight: bold;
-  letter-spacing: 2px;
+  font-family: var(--pixel-font);
+  font-size: 4rem;
+  color: var(--border);
 }
 
 label {
-  display: block;
+  font-size: 1rem;
 }
 
 select {
   width: 100%;
-  border: 2px solid #7b796b;
-  border-radius: 10px;
-  padding: 12px;
-  background: #fffaf0;
-  color: #403d34;
+  padding: 14px;
+  border-radius: 12px;
+  border: 3px solid var(--border);
+  background: white;
 }
 
 .primaryButton,
 .secondaryButton {
-  width: 100%;
-  border: 2px solid #4d5d4a;
-  border-radius: 12px;
-  padding: 13px 20px;
-  box-shadow: 3px 3px 0 #697767;
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease;
+  padding: 16px;
+  border-radius: 16px;
+  border: 3px solid var(--sage-dark);
+  font-size: 1.2rem;
+  transition: .15s;
 }
 
 .primaryButton {
-  background: #b8c4a4;
-  color: #293228;
+  background: var(--sage);
+  color: #334031;
 }
 
 .secondaryButton {
-  background: #eee3cc;
-  color: #403d34;
+  background: var(--machine);
+  color: var(--text);
 }
 
 .primaryButton:hover,
 .secondaryButton:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 #697767;
+  transform: translateY(-2px);
 }
 
 .primaryButton:active,
 .secondaryButton:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 #697767;
+  transform: translateY(2px);
 }
 
 .finishedMessage {
-  padding: 16px;
-  border: 2px dashed #b78b73;
-  border-radius: 16px;
-  background: #fff8ef;
+  border: 3px dashed var(--blush);
+  border-radius: 20px;
+  padding: 18px;
 }
 
 @keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
   to {
     transform: rotate(360deg);
   }
 }
 
-@keyframes machineWobble {
-  0%,
-  100% {
-    transform: rotate(-0.5deg);
-  }
-
-  50% {
-    transform: rotate(0.5deg);
-  }
-}
-
-@keyframes finishedBounce {
+@keyframes wobble {
   from {
-    transform: translateY(0);
+    transform: rotate(-1deg);
   }
 
   to {
-    transform: translateY(-5px);
+    transform: rotate(1deg);
   }
 }
 
-@keyframes floatBubble {
+@keyframes bubble {
   0% {
+    transform: translateY(8px);
     opacity: 0;
-    transform: translateY(8px) scale(0.7);
   }
 
   50% {
@@ -278,16 +252,36 @@ select {
   }
 
   100% {
+    transform: translateY(-12px);
     opacity: 0;
-    transform: translateY(-16px) scale(1.1);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 1ms !important;
-    animation-iteration-count: 1 !important;
+@media (max-width: 500px) {
+  .card {
+    padding: 24px;
+    min-height: auto;
+  }
+
+  header h1 {
+    font-size: 3rem;
+  }
+
+  .timer {
+    font-size: 3rem;
+  }
+
+  .washingMachine {
+    width: 230px;
+  }
+
+  .doorProgress {
+    width: 165px;
+    height: 165px;
+  }
+
+  .door {
+    width: 145px;
+    height: 145px;
   }
 }

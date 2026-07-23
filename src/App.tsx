@@ -199,7 +199,7 @@ function App() {
 
         {status === "washing" && (
           <section className="timerControls">
-            <h2>washing away!</h2>
+            <h2>washing your STINKY things!</h2>
 
             <p className="timer">{formatTime(remainingSeconds)}</p>
 
