@@ -1,227 +1,260 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
+type WashiStatus = "idle" | "washing" | "finished";
+
 const FINISH_TIME_KEY = "washi-finish-time";
-const DURATION_KEY = "washi-duration-seconds";
-
-type TimerStatus = "idle" | "washing" | "finished";
-
-function getSavedDuration(): number {
-  const savedValue = localStorage.getItem(DURATION_KEY);
-  const parsedValue = Number(savedValue);
-
-  return Number.isFinite(parsedValue) ? parsedValue : 0;
-}
-
-function getSavedFinishTime(): number | null {
-  const savedValue = localStorage.getItem(FINISH_TIME_KEY);
-
-  if (!savedValue) {
-    return null;
-  }
-
-  const parsedValue = Number(savedValue);
-
-  return Number.isFinite(parsedValue) ? parsedValue : null;
-}
-
-function calculateRemainingSeconds(finishTime: number | null): number {
-  if (!finishTime) {
-    return 0;
-  }
-
-  return Math.max(0, Math.ceil((finishTime - Date.now()) / 1000));
-}
-
-function formatTime(totalSeconds: number): string {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  if (hours > 0) {
-    return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
-  }
-
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
+const DURATION_KEY = "washi-duration";
 
 function App() {
-  const [duration, setDuration] = useState(60);
-  const [totalSeconds, setTotalSeconds] = useState(() => getSavedDuration());
-
-  const [finishTime, setFinishTime] = useState<number | null>(() =>
-    getSavedFinishTime(),
-  );
-
-  const [remainingSeconds, setRemainingSeconds] = useState(() =>
-    calculateRemainingSeconds(getSavedFinishTime()),
-  );
-
-  const status: TimerStatus =
-    finishTime === null
-      ? "idle"
-      : remainingSeconds > 0
-        ? "washing"
-        : "finished";
+  const [selectedMinutes, setSelectedMinutes] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [totalDuration, setTotalDuration] = useState(0);
+  const [status, setStatus] = useState<WashiStatus>("idle");
 
   useEffect(() => {
-    if (!finishTime) {
+    const savedFinishTime = localStorage.getItem(FINISH_TIME_KEY);
+    const savedDuration = localStorage.getItem(DURATION_KEY);
+
+    if (!savedFinishTime || !savedDuration) {
       return;
     }
 
-    function updateTimer() {
-      setRemainingSeconds(calculateRemainingSeconds(finishTime));
+    const finishTime = Number(savedFinishTime);
+    const duration = Number(savedDuration);
+    const remaining = Math.max(0, finishTime - Date.now());
+
+    setTotalDuration(duration);
+
+    if (remaining > 0) {
+      setTimeLeft(remaining);
+      setStatus("washing");
+    } else {
+      setTimeLeft(0);
+      setStatus("finished");
     }
+  }, []);
+
+  useEffect(() => {
+    if (status !== "washing") {
+      return;
+    }
+
+    const updateTimer = () => {
+      const savedFinishTime = localStorage.getItem(FINISH_TIME_KEY);
+
+      if (!savedFinishTime) {
+        return;
+      }
+
+      const remaining = Math.max(0, Number(savedFinishTime) - Date.now());
+
+      setTimeLeft(remaining);
+
+      if (remaining <= 0) {
+        setStatus("finished");
+      }
+    };
 
     updateTimer();
 
-    const intervalId = window.setInterval(updateTimer, 1000);
+    const interval = window.setInterval(updateTimer, 1000);
 
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, [finishTime]);
+    return () => window.clearInterval(interval);
+  }, [status]);
 
-  function startCycle() {
-    const newTotalSeconds = duration * 60;
-    const newFinishTime = Date.now() + newTotalSeconds * 1000;
+  const startTimer = () => {
+    const duration = selectedMinutes * 60 * 1000;
+    const finishTime = Date.now() + duration;
 
-    localStorage.setItem(FINISH_TIME_KEY, newFinishTime.toString());
-    localStorage.setItem(DURATION_KEY, newTotalSeconds.toString());
+    localStorage.setItem(FINISH_TIME_KEY, finishTime.toString());
+    localStorage.setItem(DURATION_KEY, duration.toString());
 
-    setFinishTime(newFinishTime);
-    setRemainingSeconds(newTotalSeconds);
-    setTotalSeconds(newTotalSeconds);
-  }
+    setTotalDuration(duration);
+    setTimeLeft(duration);
+    setStatus("washing");
+  };
 
-  function cancelCycle() {
+  const resetTimer = () => {
     localStorage.removeItem(FINISH_TIME_KEY);
     localStorage.removeItem(DURATION_KEY);
 
-    setFinishTime(null);
-    setRemainingSeconds(0);
-    setTotalSeconds(0);
-  }
+    setTimeLeft(0);
+    setTotalDuration(0);
+    setStatus("idle");
+  };
 
-  function completeLaundry() {
-    localStorage.removeItem(FINISH_TIME_KEY);
+  const formatTime = (milliseconds: number) => {
+    const totalSeconds = Math.ceil(milliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
 
-    setFinishTime(null);
-    setRemainingSeconds(0);
-  }
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
+    }
+
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const getMessage = () => {
+    switch (status) {
+      case "washing":
+        return "washing your STINKY things!";
+      case "finished":
+        return "all clean!!";
+      default:
+        return "ready when you are!";
+    }
+  };
+
+  const getFace = () => {
+    switch (status) {
+      case "washing":
+        return "•ᴗ•";
+      case "finished":
+        return "≧◡≦";
+      default:
+        return "•‿•";
+    }
+  };
 
   const progress =
-  totalSeconds > 0
-    ? Math.min(100, Math.max(0, (remainingSeconds / totalSeconds) * 100))
-    : 0;
+    status === "finished"
+      ? 100
+      : totalDuration > 0
+        ? ((totalDuration - timeLeft) / totalDuration) * 100
+        : 0;
+
+  const progressBackground = `conic-gradient(
+    var(--sage-dark) ${progress}%,
+    #ded8cc ${progress}% 100%
+  )`;
 
   return (
     <main className="app">
-      <section className={`card card--${status}`}>
+      <section
+        className={`card ${
+          status === "finished" ? "card--finished" : ""
+        }`}
+      >
         <header>
-          <h1>washi ! 🫧</h1>
-          <p>your laundry buddy</p>
+          <h1>washi!</h1>
+          <p>adam's laundry buddy</p>
         </header>
 
-        <div className={`washingMachine washingMachine--${status}`}>
-  <div className="controls">
-    <span className="display">
-      {status === "idle" && "ready"}
-      {status === "washing" && formatTime(remainingSeconds)}
-      {status === "finished" && "done!"}
-    </span>
+        <div className="speechBubble">
+          <span className="speechBubble__text">{getMessage()}</span>
+        </div>
 
-    <span className="dial" />
-  </div>
+        <div
+          className={`washingMachine ${
+            status === "washing" ? "washingMachine--washing" : ""
+          }`}
+        >
+          <div className="controls">
+            <div className="display">
+              {status === "washing"
+                ? formatTime(timeLeft)
+                : status === "finished"
+                  ? "DONE!"
+                  : "READY"}
+            </div>
 
-  <div
-    className="doorProgress"
-    style={{
-      background: `conic-gradient(
-        #8fa795 ${progress}%,
-        #d8cfbd ${progress}% 100%
-      )`,
-    }}
-  >
-    <div className="door">
-      <div className="clothes">
-        {status === "washing" && (
-          <>
-            <span>🧦</span>
-            <span>👕</span>
-          </>
-        )}
-      </div>
+            <div className="dial" aria-hidden="true" />
+          </div>
 
-      <div className="face" aria-label={`Washi is ${status}`}>
-        {status === "idle" && <span>• ᴗ •</span>}
-        {status === "washing" && <span>• ◡ •</span>}
-        {status === "finished" && <span>• ᴖ •</span>}
-      </div>
-    </div>
-  </div>
+          <div
+            className="doorProgress"
+            style={{ background: progressBackground }}
+          >
+            <div className="door">
+              <div className="clothes" aria-hidden="true">
+                <span>👕</span>
+                <span>🧦</span>
+              </div>
 
-  {status === "washing" && (
-    <div className="bubbles" aria-hidden="true">
-      <span>○</span>
-      <span>◦</span>
-      <span>○</span>
-    </div>
-  )}
-</div>
+              <div className="face" aria-label={`Washi is ${status}`}>
+                {getFace()}
+              </div>
+            </div>
+          </div>
 
-        {status === "idle" && (
-          <section className="timerControls">
-            <h2>ready for a wash STINKY?</h2>
+          {status === "washing" && (
+            <div className="bubbles" aria-hidden="true">
+              <span>○</span>
+              <span>○</span>
+              <span>○</span>
+            </div>
+          )}
+        </div>
 
-            <label htmlFor="duration">cycle length</label>
+        <div className="timerControls">
+          {status === "idle" && (
+            <>
+              <label htmlFor="wash-duration">
+                How long is the wash?
+              </label>
 
-            <select
-              id="duration"
-              value={duration}
-              onChange={(event) => setDuration(Number(event.target.value))}
-            >
-              <option value={1}>1 minute — testing</option>
-              <option value={30}>30 minutes</option>
-              <option value={45}>45 minutes</option>
-              <option value={60}>60 minutes</option>
-              <option value={90}>90 minutes</option>
-              <option value={120}>2 hours</option>
-            </select>
+              <select
+                id="wash-duration"
+                value={selectedMinutes}
+                onChange={(event) =>
+                  setSelectedMinutes(Number(event.target.value))
+                }
+              >
+                <option value={15}>15 minutes</option>
+                <option value={30}>30 minutes</option>
+                <option value={45}>45 minutes</option>
+                <option value={60}>1 hour</option>
+                <option value={90}>1 hour 30 minutes</option>
+                <option value={120}>2 hours</option>
+                <option value={180}>3 hours</option>
+              </select>
 
-            <button className="primaryButton" onClick={startCycle}>
-              start cycle 🫧
-            </button>
-          </section>
-        )}
+              <button
+                className="primaryButton"
+                type="button"
+                onClick={startTimer}
+              >
+                start washing
+              </button>
+            </>
+          )}
 
-        {status === "washing" && (
-          <section className="timerControls">
-            <h2>washing your STINKY things!</h2>
+          {status === "washing" && (
+            <>
+              <div className="timer">{formatTime(timeLeft)}</div>
 
-            <p className="timer">{formatTime(remainingSeconds)}</p>
+              <button
+                className="secondaryButton"
+                type="button"
+                onClick={resetTimer}
+              >
+                cancel wash
+              </button>
+            </>
+          )}
 
-            <p>washi is doing his very best</p>
+          {status === "finished" && (
+            <div className="finishedMessage">
+              <h2>laundry complete! ✨</h2>
+              <p>don't forget to empty me!</p>
 
-            <button className="secondaryButton" onClick={cancelCycle}>
-              cancel cycle
-            </button>
-          </section>
-        )}
-
-        {status === "finished" && (
-          <section className="timerControls finishedMessage">
-            <h2>all clean !</h2>
-
-            <p>pls come and rescue me 🥺</p>
-
-            <button className="primaryButton" onClick={completeLaundry}>
-              laundry moved ! ✨
-            </button>
-          </section>
-        )}
+              <button
+                className="primaryButton"
+                type="button"
+                onClick={resetTimer}
+              >
+                all emptied!
+              </button>
+            </div>
+          )}
+        </div>
       </section>
     </main>
   );
