@@ -155,8 +155,15 @@ header p {
   color: inherit;
   cursor: pointer;
   appearance: none;
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
+.faceButton:active {
+  transform: scale(0.94);
+}
 .faceButton:hover {
   transform: scale(1.08);
 }
