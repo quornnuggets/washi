@@ -11,6 +11,9 @@ function App() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [status, setStatus] = useState<WashiStatus>("idle");
+  const [isBlinking, setIsBlinking] = useState(false);
+  const [isPatted, setIsPatted] = useState(false);
+  const [showHeart, setShowHeart] = useState(false);
 
   useEffect(() => {
     const savedFinishTime = localStorage.getItem(FINISH_TIME_KEY);
@@ -36,6 +39,29 @@ function App() {
   }, []);
 
   useEffect(() => {
+    let blinkTimeout: number;
+    let reopenTimeout: number;
+
+    const blink = () => {
+      setIsBlinking(true);
+
+      reopenTimeout = window.setTimeout(() => {
+        setIsBlinking(false);
+      }, 250);
+
+      const nextBlink = Math.random() * 3000 + 3000;
+      blinkTimeout = window.setTimeout(blink, nextBlink);
+    };
+
+    blinkTimeout = window.setTimeout(blink, 1500);
+
+    return () => {
+      window.clearTimeout(blinkTimeout);
+      window.clearTimeout(reopenTimeout);
+    };
+  }, []);
+
+  useEffect(() => {
     if (status !== "washing") {
       return;
     }
@@ -47,7 +73,10 @@ function App() {
         return;
       }
 
-      const remaining = Math.max(0, Number(savedFinishTime) - Date.now());
+      const remaining = Math.max(
+        0,
+        Number(savedFinishTime) - Date.now()
+      );
 
       setTimeLeft(remaining);
 
@@ -60,15 +89,24 @@ function App() {
 
     const interval = window.setInterval(updateTimer, 1000);
 
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearInterval(interval);
+    };
   }, [status]);
 
   const startTimer = () => {
     const duration = selectedMinutes * 60 * 1000;
     const finishTime = Date.now() + duration;
 
-    localStorage.setItem(FINISH_TIME_KEY, finishTime.toString());
-    localStorage.setItem(DURATION_KEY, duration.toString());
+    localStorage.setItem(
+      FINISH_TIME_KEY,
+      finishTime.toString()
+    );
+
+    localStorage.setItem(
+      DURATION_KEY,
+      duration.toString()
+    );
 
     setTotalDuration(duration);
     setTimeLeft(duration);
@@ -84,19 +122,42 @@ function App() {
     setStatus("idle");
   };
 
+  const patWashi = () => {
+    if (isPatted) {
+      return;
+    }
+
+    setIsPatted(true);
+    setShowHeart(true);
+
+    window.setTimeout(() => {
+      setIsPatted(false);
+    }, 350);
+
+    window.setTimeout(() => {
+      setShowHeart(false);
+    }, 800);
+  };
+
   const formatTime = (milliseconds: number) => {
     const totalSeconds = Math.ceil(milliseconds / 1000);
     const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const minutes = Math.floor(
+      (totalSeconds % 3600) / 60
+    );
     const seconds = totalSeconds % 60;
 
     if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+      return `${hours}:${minutes
+        .toString()
+        .padStart(2, "0")}:${seconds
         .toString()
         .padStart(2, "0")}`;
     }
 
-    return `${minutes.toString().padStart(2, "0")}:${seconds
+    return `${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds
       .toString()
       .padStart(2, "0")}`;
   };
@@ -113,6 +174,14 @@ function App() {
   };
 
   const getFace = () => {
+    if (isPatted) {
+      return ">ᴗ<";
+    }
+
+    if (isBlinking) {
+      return status === "finished" ? "≧◡≦" : "—ᴗ—";
+    }
+
     switch (status) {
       case "washing":
         return "•ᴗ•";
@@ -144,18 +213,23 @@ function App() {
       >
         <header>
           <h1>washi!</h1>
-          <p>adam's laundry buddy</p>
+          <p>adam&apos;s laundry buddy</p>
         </header>
 
         <div className="speechBubble">
-          <span className="speechBubble__text">{getMessage()}</span>
+          <span className="speechBubble__text">
+            {getMessage()}
+          </span>
         </div>
 
         <div
           className={`washingMachine ${
-            status === "washing" ? "washingMachine--washing" : ""
-          }`}
+            status === "washing"
+              ? "washingMachine--washing"
+              : ""
+              } ${isPatted ? "washingMachine--patted" : ""}`}
         >
+          
           <div className="controls">
             <div className="display">
               {status === "washing"
@@ -178,17 +252,30 @@ function App() {
                 <span>🧦</span>
               </div>
 
-              <div className="face" aria-label={`Washi is ${status}`}>
+              <button
+                className={`face faceButton ${
+                  isBlinking ? "blinking" : ""
+                } ${isPatted ? "patted" : ""}`}
+                type="button"
+                onClick={patWashi}
+                aria-label="Pat Washi"
+              >
                 {getFace()}
-              </div>
+              </button>
+
+              {showHeart && (
+                <span className="patHeart" aria-hidden="true">
+                  ♥
+                </span>
+              )}
             </div>
           </div>
 
           {status === "washing" && (
             <div className="bubbles" aria-hidden="true">
               <span>○</span>
-              <span>○</span>
-              <span>○</span>
+              <span>◌</span>
+              <span>◍</span>
             </div>
           )}
         </div>
@@ -204,14 +291,18 @@ function App() {
                 id="wash-duration"
                 value={selectedMinutes}
                 onChange={(event) =>
-                  setSelectedMinutes(Number(event.target.value))
+                  setSelectedMinutes(
+                    Number(event.target.value)
+                  )
                 }
               >
                 <option value={15}>15 minutes</option>
                 <option value={30}>30 minutes</option>
                 <option value={45}>45 minutes</option>
                 <option value={60}>1 hour</option>
-                <option value={90}>1 hour 30 minutes</option>
+                <option value={90}>
+                  1 hour 30 minutes
+                </option>
                 <option value={120}>2 hours</option>
                 <option value={180}>3 hours</option>
               </select>
@@ -228,7 +319,9 @@ function App() {
 
           {status === "washing" && (
             <>
-              <div className="timer">{formatTime(timeLeft)}</div>
+              <div className="timer">
+                {formatTime(timeLeft)}
+              </div>
 
               <button
                 className="secondaryButton"
@@ -243,7 +336,7 @@ function App() {
           {status === "finished" && (
             <div className="finishedMessage">
               <h2>laundry complete! ✨</h2>
-              <p>don't forget to empty me!</p>
+              <p>don&apos;t forget to empty me!</p>
 
               <button
                 className="primaryButton"
