@@ -1,3 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap");
+
+:root {
+  font-family: "Fredoka", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body,
+button,
+select,
+input,
+label {
+  font-family: "Fredoka", sans-serif;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -14,11 +37,11 @@
   width: min(100%, 420px);
   min-height: 720px;
   padding: 32px;
-  border: 4px solid var(--sage-dark);
-  border-radius: 32px;
   background: var(--card);
-  text-align: center;
+  border: 4px solid var(--sage-dark);
+  border-radius: 36px;
   box-shadow: 10px 10px 0 rgba(109, 106, 95, 0.35);
+  text-align: center;
 }
 
 .card--finished {
@@ -26,10 +49,9 @@
 }
 
 header h1 {
-  margin: 0;
-  font-size: 4rem;
-  line-height: 1;
-  color: var(--heading);
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 3.8rem;
+  letter-spacing: -0.04em;
 }
 
 header p {
@@ -42,10 +64,10 @@ header p {
   position: relative;
   width: 260px;
   margin: 32px auto;
-  padding: 16px;
-  border: 4px solid var(--border);
-  border-radius: 24px;
+  padding: 18px;
   background: var(--machine);
+  border: 4px solid var(--border);
+  border-radius: 30px;
   box-shadow: 6px 6px 0 rgba(109, 106, 95, 0.3);
 }
 
@@ -86,9 +108,13 @@ header p {
 .display {
   background: var(--sage-dark);
   color: white;
+  min-width: 95px;
   padding: 10px 18px;
+  font-family: "Fredoka", sans-serif;
   font-size: 1rem;
-  min-width: 90px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  border-radius: 14px;
 }
 
 .dial {
@@ -124,11 +150,21 @@ header p {
 .clothes {
   position: absolute;
   inset: 22px;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  font-size: 2rem;
+  gap: 24px;
+
+  font-size: 1.8rem;
+}
+
+.clothes span:first-child {
+  transform: rotate(-10deg) translateY(-2px);
+}
+
+.clothes span:last-child {
+  transform: rotate(12deg) translateY(4px);
 }
 
 .washingMachine--washing .clothes {
@@ -184,7 +220,6 @@ header p {
   top: 28px;
   left: 50%;
   color: var(--blush);
-  font-family: var(--timer-font);
   font-size: 1.8rem;
   pointer-events: none;
   animation: floatHeart 0.8s ease-out forwards;
@@ -242,18 +277,17 @@ header p {
 }
 
 .timer {
-  font-family: "Fredoka", sans-serif !important;
-  font-size: 4rem;
-  font-weight: 600;
-  color: var(--heading);
-
-  background: #ffffff;
-  border: 3px solid var(--border);
-  border-radius: 18px;
-  padding: 12px 20px;
   display: inline-block;
-
+  padding: 14px 24px;
+  background: #fff;
+  border: 3px solid var(--border);
+  border-radius: 24px;
   box-shadow: 4px 4px 0 rgba(109, 106, 95, 0.2);
+  font-family: "Fredoka", sans-serif;
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--heading);
 }
 
 .timerControls {
@@ -268,24 +302,16 @@ header p {
   font-size: 2.2rem;
 }
 
-.timer {
-  font-family: var(--pixel-font);
-  font-size: 4rem;
-  color: var(--border);
-}
-
 .speechBubble {
   position: relative;
   width: fit-content;
   max-width: 280px;
   margin: 0 auto 24px;
-  padding: 14px 20px;
-
-  background: #ffffff;
+  padding: 16px 22px;
+  background: white;
   border: 3px solid var(--border);
-  border-radius: 18px;
-
-  box-shadow: 4px 4px 0 rgba(109, 106, 95, 0.2);
+  border-radius: 24px;
+  box-shadow: 4px 4px 0 rgba(109,106,95,.2);
 }
 
 .speechBubble::before {
@@ -293,22 +319,17 @@ header p {
   position: absolute;
   left: 50%;
   bottom: -14px;
-
   width: 24px;
   height: 24px;
-
   background: #ffffff;
   border-right: 3px solid var(--border);
   border-bottom: 3px solid var(--border);
-
   transform: translateX(-50%) rotate(45deg);
 }
 
 .speechBubble__text {
   position: relative;
   z-index: 1;
-
-  font-family: var(--timer-font);
   font-size: 1.25rem;
   font-weight: 500;
   color: var(--text);
@@ -320,19 +341,31 @@ label {
 
 select {
   width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: 3px solid var(--border);
+  padding: 16px 18px;
   background: white;
+  border: 3px solid var(--border);
+  border-radius: 20px;
+  font-family: "Fredoka", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  appearance: none;
 }
 
 .primaryButton,
 .secondaryButton {
-  padding: 16px;
-  border-radius: 16px;
+  width: 100%;
+  padding: 18px 24px;
+  font-family: "Fredoka", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
   border: 3px solid var(--sage-dark);
-  font-size: 1.2rem;
-  transition: .15s;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    transform .15s ease,
+    box-shadow .15s ease,
+    background .2s ease;
+  box-shadow: 4px 4px 0 rgba(109,106,95,.18);
 }
 
 .primaryButton {
@@ -341,24 +374,27 @@ select {
 }
 
 .secondaryButton {
-  background: var(--machine);
+  background: white;
   color: var(--text);
 }
 
 .primaryButton:hover,
 .secondaryButton:hover {
   transform: translateY(-2px);
+  box-shadow: 6px 6px 0 rgba(109,106,95,.22);
 }
 
 .primaryButton:active,
 .secondaryButton:active {
   transform: translateY(2px);
+  box-shadow: 2px 2px 0 rgba(109,106,95,.22);
 }
 
 .finishedMessage {
+  padding: 22px;
   border: 3px dashed var(--blush);
-  border-radius: 20px;
-  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255,255,255,.45);
 }
 
 @keyframes spin {

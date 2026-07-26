@@ -165,11 +165,11 @@ function App() {
   const getMessage = () => {
     switch (status) {
       case "washing":
-        return "washing your STINKY things!";
+        return "washing in progress !";
       case "finished":
         return "all clean!!";
       default:
-        return "ready when you are!";
+        return "ready to clean ur STINKY things !";
     }
   };
 
@@ -284,7 +284,7 @@ function App() {
           {status === "idle" && (
             <>
               <label htmlFor="wash-duration">
-                How long is the wash?
+                how long is ur wash ?
               </label>
 
               <select
