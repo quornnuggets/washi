@@ -312,7 +312,7 @@ function App() {
                 type="button"
                 onClick={startTimer}
               >
-                start washing
+                🫧 start wash
               </button>
             </>
           )}
@@ -328,7 +328,7 @@ function App() {
                 type="button"
                 onClick={resetTimer}
               >
-                cancel wash
+                stop wash
               </button>
             </>
           )}
@@ -343,7 +343,7 @@ function App() {
                 type="button"
                 onClick={resetTimer}
               >
-                all emptied!
+                all done !
               </button>
             </div>
           )}

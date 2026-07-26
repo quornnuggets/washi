@@ -34,30 +34,35 @@ label {
 }
 
 .card {
+  animation: popIn 0.35s ease;
+
   width: min(100%, 420px);
   min-height: 720px;
   padding: 32px;
+
   background: var(--card);
+
   border: 4px solid var(--sage-dark);
   border-radius: 36px;
-  box-shadow: 10px 10px 0 rgba(109, 106, 95, 0.35);
+
+  box-shadow: 7px 7px 0 rgba(109, 106, 95, 0.25);
+
   text-align: center;
 }
 
 .card--finished {
   background: #fff3ea;
+  animation: celebrate .8s ease;
 }
 
 header h1 {
-  font-family: "Pixelify Sans", sans-serif;
-  font-size: 3.8rem;
-  letter-spacing: -0.04em;
+  margin: 0;
+  line-height: 1;
 }
 
 header p {
-  margin-top: 8px;
-  color: var(--text);
-  font-size: 1.3rem;
+  font-size: 1.05rem;
+  font-weight: 500;
 }
 
 .washingMachine {
@@ -95,6 +100,21 @@ header p {
   100% {
     transform: scale(1);
   }
+}
+
+@keyframes celebrate {
+
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .controls {
@@ -177,6 +197,7 @@ header p {
   font-size: 1.7rem;
   color: var(--border);
   transition: transform 0.1s ease;
+    font-size: 1.9rem;
 }
 
 .face.blinking {
@@ -200,8 +221,10 @@ header p {
 .faceButton:active {
   transform: scale(0.94);
 }
+
 .faceButton:hover {
   transform: scale(1.08);
+  transform: translateY(-2px);
 }
 
 .faceButton:focus-visible {
@@ -223,6 +246,18 @@ header p {
   font-size: 1.8rem;
   pointer-events: none;
   animation: floatHeart 0.8s ease-out forwards;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes patSquish {
@@ -307,11 +342,12 @@ header p {
   width: fit-content;
   max-width: 280px;
   margin: 0 auto 24px;
-  padding: 16px 22px;
+  padding: 22px 28px;
   background: white;
   border: 3px solid var(--border);
   border-radius: 24px;
   box-shadow: 4px 4px 0 rgba(109,106,95,.2);
+  animation: breathe 4s ease-in-out infinite;
 }
 
 .speechBubble::before {
@@ -365,6 +401,7 @@ select {
     transform .15s ease,
     box-shadow .15s ease,
     background .2s ease;
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 4px 4px 0 rgba(109,106,95,.18);
 }
 
@@ -407,6 +444,18 @@ select {
   }
 }
 
+@keyframes breathe {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.015);
+    }
+}
+
 @keyframes wobble {
   from {
     transform: rotate(-1deg);
@@ -439,17 +488,20 @@ select {
     min-height: auto;
   }
 
-  header h1 {
-    font-size: 3rem;
-  }
+header {
+  margin-bottom: 2.25rem;
+}
 
   .timer {
     font-size: 3rem;
+    transition: .2s ease;
+}
   }
 
   .washingMachine {
     width: 230px;
-  }
+    transition: transform .2s;
+}
 
   .doorProgress {
     width: 165px;
@@ -460,4 +512,3 @@ select {
     width: 145px;
     height: 145px;
   }
-}
